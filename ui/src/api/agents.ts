@@ -121,6 +121,10 @@ export const agentsApi = {
     api.get<AdapterModel[]>(
       `/companies/${encodeURIComponent(companyId)}/adapters/${encodeURIComponent(type)}/models`,
     ),
+  openRouterModels: (companyId: string) =>
+    api.get<AdapterModel[]>(
+      `/companies/${encodeURIComponent(companyId)}/llm-providers/openrouter/models`,
+    ),
   testEnvironment: (
     companyId: string,
     type: string,

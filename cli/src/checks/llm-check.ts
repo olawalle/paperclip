@@ -1,5 +1,6 @@
 import type { PaperclipConfig } from "../config/schema.js";
 import type { CheckResult } from "./index.js";
+import { OPENROUTER_DEFAULT_BASE_URL } from "../prompts/llm.js";
 
 export async function llmCheck(config: PaperclipConfig): Promise<CheckResult> {
   if (!config.llm) {
@@ -49,6 +50,28 @@ export async function llmCheck(config: PaperclipConfig): Promise<CheckResult> {
         name: "LLM provider",
         status: "warn",
         message: `Claude API returned status ${res.status}`,
+      };
+    } else if (config.llm.provider === "openrouter") {
+      const baseUrl = config.llm.baseUrl?.replace(/\/$/, "") ?? OPENROUTER_DEFAULT_BASE_URL;
+      const res = await fetch(`${baseUrl}/models`, {
+        headers: { Authorization: `Bearer ${config.llm.apiKey}` },
+      });
+      if (res.ok) {
+        return { name: "LLM provider", status: "pass", message: "OpenRouter API key is valid" };
+      }
+      if (res.status === 401) {
+        return {
+          name: "LLM provider",
+          status: "fail",
+          message: "OpenRouter API key is invalid (401)",
+          canRepair: false,
+          repairHint: "Run `paperclipai configure --section llm`",
+        };
+      }
+      return {
+        name: "LLM provider",
+        status: "warn",
+        message: `OpenRouter API returned status ${res.status}`,
       };
     } else {
       const res = await fetch("https://api.openai.com/v1/models", {

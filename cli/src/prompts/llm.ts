@@ -1,6 +1,8 @@
 import * as p from "@clack/prompts";
 import type { LlmConfig } from "../config/schema.js";
 
+export const OPENROUTER_DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+
 export async function promptLlm(): Promise<LlmConfig | undefined> {
   const configureLlm = await p.confirm({
     message: "Configure an LLM provider now?",
@@ -19,6 +21,7 @@ export async function promptLlm(): Promise<LlmConfig | undefined> {
     options: [
       { value: "claude" as const, label: "Claude (Anthropic)" },
       { value: "openai" as const, label: "OpenAI" },
+      { value: "openrouter" as const, label: "OpenRouter" },
     ],
   });
 
@@ -27,8 +30,11 @@ export async function promptLlm(): Promise<LlmConfig | undefined> {
     process.exit(0);
   }
 
+  const apiKeyLabel =
+    provider === "claude" ? "Anthropic" : provider === "openrouter" ? "OpenRouter" : "OpenAI";
+
   const apiKey = await p.password({
-    message: `${provider === "claude" ? "Anthropic" : "OpenAI"} API key`,
+    message: `${apiKeyLabel} API key`,
     validate: (val) => {
       if (!val) return "API key is required";
     },

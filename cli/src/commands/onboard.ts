@@ -18,7 +18,7 @@ import type { PaperclipConfig } from "../config/schema.js";
 import { ensureAgentJwtSecret, resolveAgentJwtEnvFile } from "../config/env.js";
 import { ensureLocalSecretsKeyFile } from "../config/secrets-key.js";
 import { promptDatabase } from "../prompts/database.js";
-import { promptLlm } from "../prompts/llm.js";
+import { promptLlm, OPENROUTER_DEFAULT_BASE_URL } from "../prompts/llm.js";
 import { promptLogging } from "../prompts/logging.js";
 import { defaultSecretsConfig } from "../prompts/secrets.js";
 import { defaultStorageConfig, promptStorage } from "../prompts/storage.js";
@@ -331,6 +331,18 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
             }),
           });
           if (res.ok || res.status === 400) {
+            s.stop("API key is valid");
+          } else if (res.status === 401) {
+            s.stop(pc.yellow("API key appears invalid — you can update it later"));
+          } else {
+            s.stop(pc.yellow("Could not validate API key — continuing anyway"));
+          }
+        } else if (llm.provider === "openrouter") {
+          const baseUrl = llm.baseUrl?.replace(/\/$/, "") ?? OPENROUTER_DEFAULT_BASE_URL;
+          const res = await fetch(`${baseUrl}/models`, {
+            headers: { Authorization: `Bearer ${llm.apiKey}` },
+          });
+          if (res.ok) {
             s.stop("API key is valid");
           } else if (res.status === 401) {
             s.stop(pc.yellow("API key appears invalid — you can update it later"));
