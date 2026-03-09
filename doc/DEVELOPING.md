@@ -165,6 +165,34 @@ Add `--repair` to auto-fix common configuration issues:
 paperclipai doctor --repair --yes
 ```
 
+## Uninstalling Paperclip
+
+To remove local Paperclip data (database, config, logs, secrets, and storage):
+
+```sh
+# npx / global install
+npx paperclipai uninstall
+# or
+paperclipai uninstall
+
+# Source clone
+pnpm paperclipai uninstall
+```
+
+Remove all instances and the entire home directory at once:
+
+```sh
+paperclipai uninstall --all --yes
+# or from source:
+pnpm paperclipai uninstall --all --yes
+```
+
+To also remove the CLI when installed globally via npm:
+
+```sh
+npm uninstall -g paperclipai
+```
+
 ## Database in Dev (Auto-Handled)
 
 For local development, leave `DATABASE_URL` unset.

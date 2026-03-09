@@ -6,6 +6,7 @@ import { configure } from "./commands/configure.js";
 import { addAllowedHostname } from "./commands/allowed-hostname.js";
 import { heartbeatRun } from "./commands/heartbeat-run.js";
 import { runCommand } from "./commands/run.js";
+import { uninstall } from "./commands/uninstall.js";
 import { bootstrapCeoInvite } from "./commands/auth-bootstrap-ceo.js";
 import { dbBackupCommand } from "./commands/db-backup.js";
 import { registerContextCommands } from "./commands/client/context.js";
@@ -101,6 +102,15 @@ program
   .option("--repair", "Attempt automatic repairs during doctor", true)
   .option("--no-repair", "Disable automatic repairs during doctor")
   .action(runCommand);
+
+program
+  .command("uninstall")
+  .description("Remove local Paperclip data for the current instance (or all instances)")
+  .option("-d, --data-dir <path>", DATA_DIR_OPTION_HELP)
+  .option("-i, --instance <id>", "Instance id to remove (default: default)")
+  .option("--all", "Remove the entire Paperclip home directory (all instances, secrets, and context)", false)
+  .option("-y, --yes", "Skip confirmation prompts", false)
+  .action(uninstall);
 
 const heartbeat = program.command("heartbeat").description("Heartbeat utilities");
 
