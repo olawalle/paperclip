@@ -2,7 +2,7 @@
 
 Paperclip CLI now supports both:
 
-- instance setup/diagnostics (`onboard`, `doctor`, `configure`, `env`, `allowed-hostname`)
+- instance setup/diagnostics (`onboard`, `doctor`, `configure`, `env`, `allowed-hostname`, `uninstall`)
 - control-plane client operations (issues, approvals, agents, activity, dashboard)
 
 ## Base Usage
@@ -164,6 +164,39 @@ pnpm paperclipai dashboard get --company-id <company-id>
 ```sh
 pnpm paperclipai heartbeat run --agent-id <agent-id> [--api-base http://localhost:3100] [--api-key <token>]
 ```
+
+## Uninstall Command
+
+Remove local Paperclip data. This deletes instance data (database, config, logs, secrets, and storage) — it does **not** uninstall Node.js or global npm packages.
+
+```sh
+# Remove the default instance (interactive confirmation)
+pnpm paperclipai uninstall
+
+# Remove a named instance
+pnpm paperclipai uninstall --instance dev
+
+# Remove without prompts
+pnpm paperclipai uninstall --yes
+
+# Remove ALL Paperclip data (every instance + context file)
+pnpm paperclipai uninstall --all --yes
+```
+
+Options:
+
+- `--instance <id>` — instance to remove (default: `default`)
+- `--all` — remove the entire `~/.paperclip` home directory (all instances, secrets, and context)
+- `--yes` / `-y` — skip confirmation prompts
+- `--data-dir <path>` — custom Paperclip home root
+
+To also remove the CLI when installed globally via npm:
+
+```sh
+npm uninstall -g paperclipai
+```
+
+`npx` uses a local cache and does not require manual removal.
 
 ## Local Storage Defaults
 
