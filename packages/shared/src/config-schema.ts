@@ -14,8 +14,10 @@ export const configMetaSchema = z.object({
 });
 
 export const llmConfigSchema = z.object({
-  provider: z.enum(["claude", "openai"]),
+  provider: z.enum(["claude", "openai", "openrouter"]),
   apiKey: z.string().optional(),
+  /** Custom API base URL. Only used when provider is 'openrouter' to override the default endpoint (https://openrouter.ai/api/v1). */
+  baseUrl: z.string().url().optional(),
 });
 
 export const databaseBackupConfigSchema = z.object({

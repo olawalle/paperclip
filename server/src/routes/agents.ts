@@ -30,6 +30,7 @@ import {
 import { conflict, forbidden, notFound, unprocessable } from "../errors.js";
 import { assertBoard, assertCompanyAccess, getActorInfo } from "./authz.js";
 import { findServerAdapter, listAdapterModels } from "../adapters/index.js";
+import { listOpenRouterModels } from "../adapters/openrouter-models.js";
 import { redactEventPayload } from "../redaction.js";
 import { runClaudeLogin } from "@paperclipai/adapter-claude-local/server";
 import {
@@ -396,6 +397,13 @@ export function agentRoutes(db: Db) {
     assertCompanyAccess(req, companyId);
     const type = req.params.type as string;
     const models = await listAdapterModels(type);
+    res.json(models);
+  });
+
+  router.get("/companies/:companyId/llm-providers/openrouter/models", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    const models = await listOpenRouterModels();
     res.json(models);
   });
 
