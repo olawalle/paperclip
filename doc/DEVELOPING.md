@@ -89,6 +89,82 @@ docker compose -f docker-compose.quickstart.yml up --build
 
 See `doc/DOCKER.md` for API key wiring (`OPENAI_API_KEY` / `ANTHROPIC_API_KEY`) and persistence details.
 
+## Updating Paperclip
+
+How you update depends on how you originally installed Paperclip.
+
+### npx / global npm install
+
+If you run Paperclip via `npx` or a global npm install, re-run the same command with the `@latest` tag:
+
+```sh
+# npx (always fetches the published latest)
+npx paperclipai@latest onboard --yes
+
+# global install
+npm install -g paperclipai@latest
+```
+
+After upgrading the CLI, restart the server:
+
+```sh
+paperclipai run
+```
+
+### Source clone (git)
+
+If you cloned the repo and run Paperclip from source:
+
+```sh
+git pull origin master
+pnpm install
+pnpm db:migrate    # apply any new schema migrations
+```
+
+Then restart:
+
+```sh
+pnpm dev             # development mode (watch)
+# or
+pnpm paperclipai run # production-style bootstrap + run
+```
+
+### Docker
+
+Rebuild the image to pick up the latest code, then recreate the container.
+Your data persists in the mounted volume, so no data is lost.
+
+```sh
+# Standalone Docker
+docker build -t paperclip-local .
+docker stop paperclip && docker rm paperclip
+docker run --name paperclip \
+  -p 3100:3100 \
+  -e HOST=0.0.0.0 \
+  -e PAPERCLIP_HOME=/paperclip \
+  -v "$(pwd)/data/docker-paperclip:/paperclip" \
+  paperclip-local
+
+# Docker Compose
+docker compose -f docker-compose.quickstart.yml up --build
+```
+
+### Post-update verification
+
+After any update, run the doctor to confirm everything is healthy:
+
+```sh
+paperclipai doctor
+# or from source:
+pnpm paperclipai doctor
+```
+
+Add `--repair` to auto-fix common configuration issues:
+
+```sh
+paperclipai doctor --repair --yes
+```
+
 ## Database in Dev (Auto-Handled)
 
 For local development, leave `DATABASE_URL` unset.
